@@ -1,0 +1,93 @@
+<!-- 
+  使用原生js写法模拟路由实现
+  
+ -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link rel="stylesheet" href="./base.css" />
+    <title>Javascript原生路由(history版)</title>
+  </head>
+  <body>
+    <div class="wrapper">
+      <h4 class="wrapper__title">Javascript原生路由(history版)</h4>
+      <div class="wrapper__links">
+        <a href="/home">主页</a>
+        <a href="/page-a">页面A</a>
+        <a href="/page-b">页面B</a>
+      </div>
+      <div class="wrapper__pages">
+        <div class="page home">主页</div>
+        <div class="page a">页面A<a href='/home'>点击这里回到主页</a></div>
+        <div class="page b">页面B</div>
+      </div>
+    </div>
+  </body>
+</html>
+<script>
+  window.addEventListener('DOMContentLoaded', onDOMContentLoaded)
+  /**
+   * popstate事件
+   * 1. 可以监听到浏览器前进后退引起的URL变化
+   * 2. 通过pushState/replaceState触发的URL变化不会触发该事件
+   * 3. 通过a标签改变URL也不会触发该事件
+   * 4. 页面加载完成时不会自动触发
+   */
+  window.addEventListener('popstate', onPopState)
+
+  // 拦截页面上的点击事件
+  document.addEventListener('click', function(e) {
+    var target = e.target
+    var tagName = target.tagName.toLowerCase()
+    switch (tagName) {
+      case 'a': // 将a标签的点击事件代理为js修改history实现切换url
+        e.preventDefault()
+        history.pushState(null, '', target.getAttribute('href')) // 记录一条history信息，这种方式会形成堆栈，如果不想形成可以换用replaceState
+        onPopState()
+        break
+    }
+  })
+
+  var pageWrapperEl = document.querySelector('.wrapper__pages')
+  var homeEl = pageWrapperEl.querySelector('.home')
+  var aEl = pageWrapperEl.querySelector('.a')
+  var bEl = pageWrapperEl.querySelector('.b')
+
+  function onDOMContentLoaded() {
+    console.warn('DOMContentLoaded!')
+    onPopState() // 页面加载完毕时不会自动触发popstate事件，需要手动触发去匹配路由
+  }
+
+  function onPopState() {
+    console.warn('historyChange!')
+    var pathname = location.pathname
+    console.info(pathname)
+    switch (pathname) { // 匹配路由
+      case '/home':
+        homeEl.style.display = 'block'
+        aEl.style.display = 'none'
+        bEl.style.display = 'none'
+        break
+      case '/page-a':
+        homeEl.style.display = 'none'
+        aEl.style.display = 'block'
+        bEl.style.display = 'none'
+        break
+      case '/page-b':
+        homeEl.style.display = 'none'
+        aEl.style.display = 'none'
+        bEl.style.display = 'block'
+        break
+      default:
+        // 默认都重定向到主页
+        redirect('/home')
+    }
+  }
+
+  function redirect(pathname) {
+    location.pathname = pathname
+  }
+</script>

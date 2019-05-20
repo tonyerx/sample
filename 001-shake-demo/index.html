@@ -1,0 +1,26 @@
+<!-- 
+  测试web环境是否支持震动
+  结论：
+    iOS不支持（Safari和Webview都不支持）
+    Android支持
+ -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>震动支持测验</title>
+</head>
+<body>
+  <div>
+    <span>Webview是否支持震动：</span>
+    <span id="isSupportVibrate"></span>
+  </div>
+</body>
+</html>
+<script>
+  var isSupportVibrate = 'vibrate' in navigator || 'webkitVibrate' in navigator;
+  document.getElementById('isSupportVibrate').innerHTML = isSupportVibrate ? `是-${'vibrate' in navigator ? '标准' : 'webkit'}` : '否';
+  // navigator.vibrate(1000);
+</script>

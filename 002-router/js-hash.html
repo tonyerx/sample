@@ -1,0 +1,72 @@
+<!-- 
+  使用原生js写法模拟路由实现
+ -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link rel="stylesheet" href="./base.css" />
+    <title>Javascript原生路由(hash版)</title>
+  </head>
+  <body>
+    <div class="wrapper">
+      <h4 class="wrapper__title">Javascript原生路由(hash版)</h4>
+      <div class="wrapper__links">
+        <a href="#/home">主页</a>
+        <a href="#/page-a">页面A</a>
+        <a href="#/page-b">页面B</a>
+      </div>
+      <div class="wrapper__pages">
+        <div class="page home">主页</div>
+        <div class="page a">页面A</div>
+        <div class="page b">页面B</div>
+      </div>
+    </div>
+  </body>
+</html>
+<script>
+  window.addEventListener('DOMContentLoaded', onDOMContentLoaded)
+  window.addEventListener('hashchange', onHashChange)
+
+  var pageWrapperEl = document.querySelector('.wrapper__pages')
+  var homeEl = pageWrapperEl.querySelector('.home')
+  var aEl = pageWrapperEl.querySelector('.a')
+  var bEl = pageWrapperEl.querySelector('.b')
+
+  function onDOMContentLoaded() {
+    console.warn('DOMContentLoaded!')
+    onHashChange() // 页面加载完成的时候不会自动触发hashchange，为了初始化路由，需要手动触发hashchange
+  }
+
+  function onHashChange() {
+    console.warn('hashChange!')
+    var hash = window.location.hash.slice(1)
+    console.info(hash)
+    switch (hash) { // 匹配路由
+      case '/home':
+        homeEl.style.display = 'block'
+        aEl.style.display = 'none'
+        bEl.style.display = 'none'
+        break
+      case '/page-a':
+        homeEl.style.display = 'none'
+        aEl.style.display = 'block'
+        bEl.style.display = 'none'
+        break
+      case '/page-b':
+        homeEl.style.display = 'none'
+        aEl.style.display = 'none'
+        bEl.style.display = 'block'
+        break
+      default:
+        // 默认都重定向到主页
+        redirect('#' + '/home')
+    }
+  }
+
+  function redirect(hash) {
+    location.hash = hash
+  }
+</script>

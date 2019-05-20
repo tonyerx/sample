@@ -1,0 +1,175 @@
+<!-- 
+  使用React框架模拟路由实现
+ -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link rel="stylesheet" href="./base.css" />
+    <style>
+      .wrapper__pages .page__home,
+      .wrapper__pages .page__a,
+      .wrapper__pages .page__b {
+        display: block;
+      }
+    </style>
+    <title>React路由(history版)</title>
+    <script
+      crossorigin
+      src="https://unpkg.com/react@16/umd/react.development.js"
+    ></script>
+    <script
+      crossorigin
+      src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"
+    ></script>
+    <script src="https://cdn.staticfile.org/babel-standalone/6.26.0/babel.min.js"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>
+<script type="text/babel">
+  // RouteContext，用于在BrowserRouter与Route之间传递数据
+  const RouteContext = React.createContext({
+    location: {
+      pathname: ''
+    },
+    history: {
+      push: null
+    },
+    handlePopState: () => {}
+  })
+  // Route，用于根据路由渲染组件
+  class Route extends React.Component {
+    renderComponent = ({ location }) => {
+      const { path, render: Component } = this.props
+      return path === location.pathname && <Component location={location} />
+    }
+    render() {
+      return (
+        <RouteContext.Consumer>{this.renderComponent}</RouteContext.Consumer>
+      )
+    }
+  }
+  // Link，用于模拟a标签跳转
+  const Link = ({ to, ...props }) => {
+    function handleClickLink({ location, handlePopState }) {
+      return e => {
+        e.preventDefault()
+        history.pushState(null, '', to)
+        handlePopState(e)
+      }
+    }
+    return (
+      <RouteContext.Consumer>
+        {context => (
+          <a href="#" {...props} onClick={handleClickLink(context)} />
+        )}
+      </RouteContext.Consumer>
+    )
+  }
+  // Switch，用于唯一匹配
+  const Switch = ({ children }) => {
+    return (
+      <RouteContext.Consumer>
+        {context => {
+          const { pathname } = context.location
+          for (let i = 0; i < children.length; i++) {
+            //如果匹配到第一个就返回
+            const child = children[i]
+            const { path, from } = child.props
+            if (path === pathname || from === pathname || from === '/') {
+              return React.cloneElement(child, {
+                handlePopState: context.handlePopState
+              })
+            }
+          }
+        }}
+      </RouteContext.Consumer>
+    )
+  }
+  // Redirect，用于重定向，只能用在switch中
+  class Redirect extends React.Component {
+    componentDidMount() {
+      history.pushState(null, '', this.props.to)
+      this.props.handlePopState()
+    }
+    render() {
+      return null
+    }
+  }
+  // BrowserRouter，用于实现popState的监听和调整
+  class BrowserRouter extends React.Component {
+    state = {
+      location: { hash: '' }
+    }
+    handlePopState = e => {
+      console.warn('popstate')
+      const pathname = location.pathname
+      console.log(pathname)
+      this.setState({ location: { ...this.state.location, pathname } })
+    }
+    componentDidMount() {
+      window.addEventListener('popstate', this.handlePopState)
+
+      this.handlePopState()
+    }
+    componentWillUnmount() {
+      window.removeEventListener('popstate', this.handlePopState)
+    }
+    render() {
+      return (
+        <RouteContext.Provider
+          value={{
+            location: this.state.location,
+            handlePopState: this.handlePopState
+          }}
+        >
+          {this.props.children}
+        </RouteContext.Provider>
+      )
+    }
+  }
+  // usage
+  const App = () => (
+    <BrowserRouter>
+      <div className="wrapper">
+        <h4 className="wrapper__title">React路由(history版)</h4>
+        <div className="wrapper__links">
+          <Link to="/home">主页</Link>
+          <Link to="/page-a">页面A</Link>
+          <Link to="/page-b">页面B</Link>
+        </div>
+        <div className="wrapper__pages">
+          <Switch>
+            <Route
+              path="/home"
+              render={() => <div className="page__home">主页</div>}
+            />
+            <Route
+              path="/page-a"
+              render={() => (
+                <div className="page__a">
+                  页面A<Link to="/home">回到主页</Link>
+                </div>
+              )}
+            />
+            <Route
+              path="/page-b"
+              render={() => <div className="page__b">页面B</div>}
+            />
+            {/* 测试Switch功能 */}
+            <Route
+              path="/page-b"
+              render={() => <div className="page__b">页面BB</div>}
+            />
+            <Redirect from="/" to="/home" />
+          </Switch>
+        </div>
+      </div>
+    </BrowserRouter>
+  )
+  ReactDOM.render(<App />, document.querySelector('#root'))
+</script>
