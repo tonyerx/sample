@@ -1,0 +1,28 @@
+{
+  "name": "004-rollup",
+  "version": "1.0.2",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "rollup -c ./rollup.config.dev.js -w",
+    "build:es": "rollup ./src/main.js --format es --file ./dist/dist.es.js",
+    "build:amd": "rollup ./src/main.js --format amd --file ./dist/dist.amd.js",
+    "build:cjs": "rollup ./src/main.js --format cjs --file ./dist/dist.cjs.js",
+    "build:iife": "rollup ./src/main.js --format iife --name result --file ./dist/dist.iife.js",
+    "build:umd": "rollup ./src/main.js --format umd --name result --file ./dist/dist.umd.js",
+    "build:all": "npm run build:amd && npm run build:cjs && npm run build:es && npm run build:iife && npm run build:umd",
+    "build:config": "rollup -c",
+    "build:diy": "rollup -c ./rollup.config.diy.js",
+    "build:node": "node ./build.js"
+  },
+  "author": "tonyerx",
+  "license": "ISC",
+  "devDependencies": {
+    "rollup": "^1.14.4",
+    "rollup-plugin-json": "^4.0.0"
+  },
+  "dependencies": {
+    "lodash": "^4.17.11"
+  }
+}
