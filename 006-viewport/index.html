@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Document</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      background-color: yellow;
+      font-family: '-apple-system-font','sans-serif';
+    }
+    .p {
+      width: 100%;
+      /* overflow: hidden; */
+      word-break: break-all;
+      word-wrap: break-word;
+      font-size: 18px;
+    }
+    .p1 {
+      background-color: green;
+    }
+    .p2 {
+      background-color: skyblue;
+    }
+    .p3 {
+      background-color: hot-pink;
+    }
+    .p4 {
+      background-color: #ccc;
+    }
+    .p5 {
+      background-color: purple;
+    }
+    .p6 {
+      height: 20px;
+      background-color: orange;
+    }
+    .p6 .progress {
+      display: block;
+      width: 100px; /* 占父盒子1/3 */
+      height: 100%;
+      background-color: aqua;
+    }
+  </style>
+  <script>
+    var baseWidth = 300;
+    var ratio = 0.8;
+    var scale = parseInt(window.screen.width) / baseWidth * ratio;
+    if (/Android/.test(navigator.userAgent)) {
+      document.write('<meta name="viewport" content="width=' + baseWidth + ', initial-scale= ' + scale + '">');
+    } else {
+      document.write('<meta name="viewport" content="width=' + baseWidth + ', user-scalable=no, viewport-fit=cover">');
+    }
+  </script>
+</head>
+<body>
+  <p class="p p1"></p>
+  <p class="p p2"></p>
+  <p class="p p3"></p>
+  <p class="p p4"></p>
+  <p class="p p5"></p>
+  <p class="p p6">
+    <span class="progress"></span>
+  </p>
+</body>
+</html>
+<script>
+  var clientWidth = document.documentElement.clientWidth;
+  document.querySelector('.p1').innerHTML = 'clientWidth: ' + clientWidth;
+
+  var innerWidth = window.innerWidth;
+  document.querySelector('.p2').innerHTML = 'innerWidth: ' + innerWidth;
+
+  var screenWidth = window.screen.width;
+  document.querySelector('.p3').innerHTML = 'screenWidth: ' + screenWidth;
+
+  var divWidth = document.querySelector('.p4').offsetWidth;
+  document.querySelector('.p4').innerHTML = 'divWidth: ' + divWidth;
+
+  // document.querySelector('.p5').innerHTML = 'Android version: ' + navigator.userAgent;
+  
+</script>
